@@ -5,15 +5,16 @@ import os
 import argparse 
 
 try:
-    dbconn = mdb.connect(host="127.0.0.1", port=3306, user="miner", passwd="suyu", charset='utf8')
+    dbconn = mdb.connect(host="192.168.204.128", port=3306, user="miner", passwd="miner", charset='utf8')
     dbconn.select_db("Corps")
     dbcursor = dbconn.cursor()
+    
 except Exception as e:
-        print str(e)
-        
+    print str(e)
+
+
 def scan_files(directory,prefix=None,postfix=None):
     files_list=[]
-    
     for root, sub_dirs, files in os.walk(directory):
         for special_file in files:
             if postfix:
@@ -104,8 +105,9 @@ def main():
     parser.add_argument("-p","--path",type=str,required=False,help="import or outport corp file from a path")
     parser.add_argument("-n","--name",type=str,required=False,help="project name of the corps")      
     args = parser.parse_args()
-    
-    if args.upload:            
+
+
+    if args.upload:
         if not args.name:
             print "You SHOULD write -n argument "
             return
@@ -115,26 +117,29 @@ def main():
         elif args.path:
             files_list = scan_files(args.path)
             for file in files_list:
-                status = write_data_to_db(args.name,file)    
+                status = write_data_to_db(args.name,file)
                 print(file,status)
-            
+
     if args.download:
         if not args.name:
             print "You SHOULD write -n argument "
-            return    
+            return
         if args.path:
             wite_data_to_file(args.name,args.path)
         else:
             print("You MUST add -p argument to assign download path")
-            
+
     if args.query:
         if args.name:
             query_project(args.name)
         else:
-            query_all()           
-    
-    dbcursor.close()        
+            query_all()
+
+
+    dbcursor.close()
     dbconn.close()
+
+
                 
 if __name__ == "__main__":
     main()
